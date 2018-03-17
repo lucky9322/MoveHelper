@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
             switch (action) {
                 case BluetoothAdapter.ACTION_DISCOVERY_STARTED:
                     Log.i(TAG, "开始搜索");
+                    break;
                 case BluetoothAdapter.ACTION_DISCOVERY_FINISHED:
                     Log.i(TAG, "onReceive: 搜索结束");
                     break;
@@ -64,10 +65,14 @@ public class MainActivity extends AppCompatActivity {
                         Log.i(TAG, "device name " + device.getName());
                     }
                     if (null != device && device.getName() != null) {
-                        listData.add(device.getName());
-                        listAddressData.add(device.getAddress());
-                        // TODO: 2018/3/17 需要保证刷新在UI线程 lucky
-                        listAdapter.notifyDataSetChanged();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                listData.add(device.getName());
+                                listAddressData.add(device.getAddress());
+                                listAdapter.notifyDataSetChanged();
+                            }
+                        });
                     }
                     break;
                 case BluetoothAdapter.ACTION_STATE_CHANGED:
@@ -110,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                 // TODO Auto-generated method stub
                 Constant.address = listAddressData.get(position);
                 if (device != null && Constant.address != null) {
-
+                    adapter.cancelDiscovery();
                     Intent intent = new Intent();
                     intent.putExtra("viewType", 2);
                     // intent.putExtra("viewType", 3);
@@ -137,7 +142,8 @@ public class MainActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.button_create_room:
-                if (adapter.isEnabled()) {
+                if (adapter.isEnabled() && adapter.getScanMode() !=
+                        BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
                     Intent discoveryIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
                     discoveryIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
                     startActivityForResult(discoveryIntent, 1);
@@ -161,6 +167,9 @@ public class MainActivity extends AppCompatActivity {
                     adapter.enable();
                     // mBluetoothAdapter.disable();//关闭蓝牙
                 } else if (adapter.isEnabled()) {
+                    if (adapter.isDiscovering()) {
+                        adapter.cancelDiscovery();
+                    }
                     initData();
                     adapter.startDiscovery();
                 }
@@ -168,12 +177,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onRestart() {
-        // TODO Auto-generated method stub
-        initData();
-        super.onRestart();
-    }
+
 
     private void initData() {
         listAddressData.removeAll(listAddressData);
