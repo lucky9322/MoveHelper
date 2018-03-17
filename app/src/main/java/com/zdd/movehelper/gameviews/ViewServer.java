@@ -18,13 +18,11 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.zdd.movehelper.R;
-import com.zdd.movehelper.TestServerActivity;
+import com.zdd.movehelper.ServerActivity;
 import com.zdd.movehelper.util.AssetsLoad;
 import com.zdd.movehelper.util.Constant;
 import com.zdd.movehelper.util.StringDealer;
 import com.zdd.movehelper.util.Utils;
-
-import junit.framework.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,7 +34,7 @@ import java.io.OutputStream;
  * Created by Zdd on 2018/3/17.
  */
 
-public class MyGameViewServer extends SurfaceView implements Runnable, SurfaceHolder.Callback {
+public class ViewServer extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
     private static final String TAG = "MyGameViewServer";
 
@@ -61,7 +59,7 @@ public class MyGameViewServer extends SurfaceView implements Runnable, SurfaceHo
     //    0 没有胜利，1 我放胜利，2 对方胜利
     private int whoWin = 0;
 
-    public MyGameViewServer(Context context) {
+    public ViewServer(Context context) {
         super(context);
         isExit = false;
         sfh = this.getHolder();
@@ -194,8 +192,8 @@ public class MyGameViewServer extends SurfaceView implements Runnable, SurfaceHo
                             Constant.ground[y][x] = Constant.WHITE_CHESS;
                             AssetsLoad.playSound(getContext(), AssetsLoad.putSoundId);
                             if (Utils.isWin(x, y)) {
-                                Message msg4 = TestServerActivity.handler.obtainMessage(Constant.SERVER_WIN);
-                                TestServerActivity.handler.sendMessage(msg4);
+                                Message msg4 = ServerActivity.handler.obtainMessage(Constant.SERVER_WIN);
+                                ServerActivity.handler.sendMessage(msg4);
                                 whoWin = 1;
                                 new MWriteThread(new int[]{y, x, Constant.ENEMYWIN}).start();
                             } else {
@@ -231,10 +229,10 @@ public class MyGameViewServer extends SurfaceView implements Runnable, SurfaceHo
                 Log.i(TAG, "run: 等待连接");
                 Message msg1 = new Message();
                 msg1.what = Constant.SERVER_CONNECTING;
-                TestServerActivity.handler.sendMessage(msg1);
+                ServerActivity.handler.sendMessage(msg1);
                 socket = serverSocket.accept();
-                Message msg2 = TestServerActivity.handler.obtainMessage(Constant.SERVER_CONNECT_OK);
-                TestServerActivity.handler.sendMessage(msg2);
+                Message msg2 = ServerActivity.handler.obtainMessage(Constant.SERVER_CONNECT_OK);
+                ServerActivity.handler.sendMessage(msg2);
                 Log.i(TAG, "run: 已经连接上le");
                 new MReadThread().start();
             } catch (IOException e) {
@@ -272,8 +270,8 @@ public class MyGameViewServer extends SurfaceView implements Runnable, SurfaceHo
                             isStop = true;
 
                             whoWin = 2;
-                            Message msg3 = TestServerActivity.handler.obtainMessage(Constant.SERVER_FAIL);
-                            TestServerActivity.handler.sendMessage(msg3);
+                            Message msg3 = ServerActivity.handler.obtainMessage(Constant.SERVER_FAIL);
+                            ServerActivity.handler.sendMessage(msg3);
                         } else {
                             isMyTurn = true;
                         }

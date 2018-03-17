@@ -17,8 +17,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.zdd.movehelper.ClientActivity;
 import com.zdd.movehelper.R;
-import com.zdd.movehelper.TestClientActivity;
 import com.zdd.movehelper.util.AssetsLoad;
 import com.zdd.movehelper.util.Constant;
 import com.zdd.movehelper.util.StringDealer;
@@ -33,7 +33,7 @@ import java.io.OutputStream;
  * Created by Zdd on 2018/3/17.
  */
 
-public class MyGameViewClient extends SurfaceView implements Runnable, SurfaceHolder.Callback {
+public class ViewClient extends SurfaceView implements Runnable, SurfaceHolder.Callback {
     private static final String TAG = "MyGameViewClient";
 
     private SurfaceHolder sfh;
@@ -53,7 +53,7 @@ public class MyGameViewClient extends SurfaceView implements Runnable, SurfaceHo
     private BluetoothSocket socket;
     private BluetoothDevice device;
 
-    public MyGameViewClient(Context context) {
+    public ViewClient(Context context) {
         super(context);
 
         isExit = false;
@@ -117,9 +117,9 @@ public class MyGameViewClient extends SurfaceView implements Runnable, SurfaceHo
                             AssetsLoad.playSound(getContext(),
                                     AssetsLoad.putSoundId);
                             if (Utils.isWin(x, y)) {
-                                Message msg3 = TestClientActivity.handler.obtainMessage(Constant.CLIENT_WIN);
+                                Message msg3 = ClientActivity.handler.obtainMessage(Constant.CLIENT_WIN);
                                 whoWin = 1;
-                                TestClientActivity.handler.sendMessage(msg3);
+                                ClientActivity.handler.sendMessage(msg3);
                                 new MWriteThread(new int[]{y, x, Constant.ENEMYWIN}).start();
                             } else {
                                 new MWriteThread(new int[]{y, x, Constant.ENEMYNOTWIN}).start();
@@ -224,15 +224,15 @@ public class MyGameViewClient extends SurfaceView implements Runnable, SurfaceHo
         public void run() {
             try {
                 socket = device.createInsecureRfcommSocketToServiceRecord(Constant.uuid);
-                if (null == TestClientActivity.handler) {
-                    Log.i(TAG, "run: TestClientActivity.handler null null null");
+                if (null == ClientActivity.handler) {
+                    Log.i(TAG, "run: ClientActivity.handler null null null");
                 }
-                Message msg1 = TestClientActivity.handler.obtainMessage(Constant.CLIENT_CONNECTING);
-                TestClientActivity.handler.sendMessage(msg1);
+                Message msg1 = ClientActivity.handler.obtainMessage(Constant.CLIENT_CONNECTING);
+                ClientActivity.handler.sendMessage(msg1);
                 Log.i(TAG, "run: 正在创建客户端");
                 socket.connect();
-                Message msg2 = TestClientActivity.handler.obtainMessage(Constant.CLIENT_CONNECT_OK);
-                TestClientActivity.handler.sendMessage(msg2);
+                Message msg2 = ClientActivity.handler.obtainMessage(Constant.CLIENT_CONNECT_OK);
+                ClientActivity.handler.sendMessage(msg2);
                 Log.i(TAG, "run: 已经连接上服务器");
 
                 new MReadThread().start();
@@ -275,8 +275,8 @@ public class MyGameViewClient extends SurfaceView implements Runnable, SurfaceHo
                                     AssetsLoad.putSoundId);
                             if (data[2] == Constant.ENEMYWIN) {
                                 isStop = true;
-                                Message msg4 = TestClientActivity.handler.obtainMessage(Constant.CLIENT_FAIL);
-                                TestClientActivity.handler.sendMessage(msg4);
+                                Message msg4 = ClientActivity.handler.obtainMessage(Constant.CLIENT_FAIL);
+                                ClientActivity.handler.sendMessage(msg4);
                                 whoWin = 2;
                                 //白棋获胜
                                 //Toast.makeText(context, "白棋获胜", Toast.LENGTH_SHORT).show();
