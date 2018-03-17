@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                     // intent.putExtra("viewType", 3);
                     Constant.serverOrClient = false;
                     intent.setClass(getApplicationContext(),
-                            TestClientActivity.class);
+                            ClientActivity.class);
                     // intent.setClass(getApplicationContext(),MainActivity.class);
                     startActivity(intent);
                 }
@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG, "onActivityResult: 服务端已打开");
                 Intent intent = new Intent();
                 intent.putExtra("viewType", 2);
-                intent.setClass(getApplicationContext(), TestServerActivity.class);
+                intent.setClass(getApplicationContext(), ServerActivity.class);
                 Constant.serverOrClient = true;
                 startActivity(intent);
             } else if (resultCode == RESULT_CANCELED) {

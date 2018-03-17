@@ -8,9 +8,9 @@ import android.content.Context;
  * Created by Zdd on 2018/3/17.
  */
 
-public class MyWaitingProgressDialog extends ProgressDialog {
+public class WaitingProgressDialog extends ProgressDialog {
 
-    public MyWaitingProgressDialog(Context context) {
+    public WaitingProgressDialog(Context context) {
         super(context);
         // 设置进度条风格，风格为圆形，旋转的
         setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -26,7 +26,7 @@ public class MyWaitingProgressDialog extends ProgressDialog {
         setCancelable(true);
     }
 
-    public MyWaitingProgressDialog(Context context, int theme) {
+    public WaitingProgressDialog(Context context, int theme) {
         super(context, theme);
     }
 }
